@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
+const { testDbConnection } = require('./config/db');
+
 const app = express();
 
 // Middleware
@@ -12,13 +14,16 @@ app.use(cors({
 }));
 
 // Health Check Endpoint (MANDATORY)
-app.get('/api/health', (req, res) => {
-  return res.status(200).json({
-    status: 'ok',
-    database: 'not_connected',
-    timestamp: new Date().toISOString()
+app.get('/api/health', async (req, res) => {
+    const dbConnected = await testDbConnection();
+  
+    return res.status(200).json({
+      status: 'ok',
+      database: dbConnected ? 'connected' : 'not_connected',
+      timestamp: new Date().toISOString()
+    });
   });
-});
+  
 
 // Start Server
 const PORT = process.env.PORT || 5000;

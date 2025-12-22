@@ -1,109 +1,73 @@
--- Seed Data for Multi-Tenant SaaS
+-- =========================
+-- SEED DATA (IDEMPOTENT)
+-- =========================
 
--- =========================
--- SUPER ADMIN (NO TENANT)
--- =========================
-INSERT INTO users (id, tenant_id, email, password_hash, full_name, role)
+-- Super Admin
+INSERT INTO users (id, email, password_hash, full_name, role, tenant_id)
 VALUES (
   uuid_generate_v4(),
-  NULL,
   'superadmin@system.com',
-  '$2b$10$9k4xKQ9qK1J9Qx8b8QyZ9eHq2nHkE1Yw2Z3QnYQZqJ4GQk2pYJp6y',
-  'System Admin',
-  'super_admin'
-);
+  '$2b$10$PwVO1FI/fcsRcltfLMsGfupfpAVGitcLVWycV.YtmOwXLJYYef1de',
+  'Super Admin',
+  'super_admin',
+  NULL
+)
+ON CONFLICT DO NOTHING;
 
--- =========================
--- DEMO TENANT
--- =========================
-INSERT INTO tenants (id, name, subdomain, subscription_plan, max_users, max_projects)
+-- Tenant
+INSERT INTO tenants (id, name, subdomain, status, subscription_plan, max_users, max_projects)
 VALUES (
   uuid_generate_v4(),
   'Demo Company',
   'demo',
+  'active',
   'pro',
   25,
   15
-);
+)
+ON CONFLICT DO NOTHING;
 
--- =========================
--- TENANT ADMIN
--- =========================
+-- Tenant Admin
+WITH t AS (
+  SELECT id FROM tenants WHERE subdomain = 'demo'
+)
 INSERT INTO users (id, tenant_id, email, password_hash, full_name, role)
 SELECT
   uuid_generate_v4(),
   t.id,
   'admin@demo.com',
-  '$2b$10$z9x4F3QqXkQp3r3MZC2y9u1BqZr1x9yJQKQJv9Zk2sX7KZk5QmK8a',
+  '$2b$10$TVpRCv033byz7qapDJkr0OFR13h4CVUEac2mIPxb3l3rc.YHfAkwW',
   'Demo Admin',
   'tenant_admin'
-FROM tenants t WHERE t.subdomain = 'demo';
+FROM t
+ON CONFLICT DO NOTHING;
 
--- =========================
--- REGULAR USERS
--- =========================
+-- Regular User 1
+WITH t AS (
+  SELECT id FROM tenants WHERE subdomain = 'demo'
+)
 INSERT INTO users (id, tenant_id, email, password_hash, full_name, role)
 SELECT
   uuid_generate_v4(),
   t.id,
   'user1@demo.com',
-  '$2b$10$Qp2X8JYk9Q1qZKXQZy9x4nJr3Zp1M2kYQZQk8KJ9YQp3Xk7QZ9K2',
-  'Demo User One',
+  '$2b$10$FisEknKpWmd4g/i6uxUTY.8C1cfkaTDoNtVmYc8ZhsPgSahRNJpz6',
+  'Demo User 1',
   'user'
-FROM tenants t WHERE t.subdomain = 'demo';
+FROM t
+ON CONFLICT DO NOTHING;
 
+-- Regular User 2
+WITH t AS (
+  SELECT id FROM tenants WHERE subdomain = 'demo'
+)
 INSERT INTO users (id, tenant_id, email, password_hash, full_name, role)
 SELECT
   uuid_generate_v4(),
   t.id,
   'user2@demo.com',
-  '$2b$10$Qp2X8JYk9Q1qZKXQZy9x4nJr3Zp1M2kYQZQk8KJ9YQp3Xk7QZ9K2',
-  'Demo User Two',
+  '$2b$10$FisEknKpWmd4g/i6uxUTY.8C1cfkaTDoNtVmYc8ZhsPgSahRNJpz6',
+  'Demo User 2',
   'user'
-FROM tenants t WHERE t.subdomain = 'demo';
-
--- =========================
--- PROJECTS
--- =========================
-INSERT INTO projects (id, tenant_id, name, description, created_by)
-SELECT
-  uuid_generate_v4(),
-  t.id,
-  'Project Alpha',
-  'First demo project',
-  u.id
-FROM tenants t
-JOIN users u ON u.email = 'admin@demo.com'
-WHERE t.subdomain = 'demo';
-
-INSERT INTO projects (id, tenant_id, name, description, created_by)
-SELECT
-  uuid_generate_v4(),
-  t.id,
-  'Project Beta',
-  'Second demo project',
-  u.id
-FROM tenants t
-JOIN users u ON u.email = 'admin@demo.com'
-WHERE t.subdomain = 'demo';
-
--- =========================
--- TASKS
--- =========================
-INSERT INTO tasks (id, project_id, tenant_id, title, priority)
-SELECT
-  uuid_generate_v4(),
-  p.id,
-  p.tenant_id,
-  'Initial Task for Alpha',
-  'high'
-FROM projects p WHERE p.name = 'Project Alpha';
-
-INSERT INTO tasks (id, project_id, tenant_id, title, priority)
-SELECT
-  uuid_generate_v4(),
-  p.id,
-  p.tenant_id,
-  'Initial Task for Beta',
-  'medium'
-FROM projects p WHERE p.name = 'Project Beta';
+FROM t
+ON CONFLICT DO NOTHING;

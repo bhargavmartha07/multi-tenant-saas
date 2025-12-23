@@ -3,6 +3,9 @@
 const pool = require("../db/connection");
 const { v4: uuidv4 } = require("uuid");
 
+// ============================
+// POST /api/tenants
+// ============================
 exports.createTenant = async (req, res) => {
   const client = await pool.connect();
 
@@ -31,7 +34,6 @@ exports.createTenant = async (req, res) => {
 
     await client.query("BEGIN");
 
-    // Default subscription plan (FREE)
     const tenantId = uuidv4();
     const subscriptionPlan = "free";
     const maxUsers = 5;
@@ -75,5 +77,39 @@ exports.createTenant = async (req, res) => {
     });
   } finally {
     client.release();
+  }
+};
+
+// ============================
+// GET /api/tenants
+// ============================
+exports.getAllTenants = async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT
+        id,
+        name,
+        subdomain,
+        status,
+        subscription_plan,
+        max_users,
+        max_projects,
+        created_at
+       FROM tenants
+       ORDER BY created_at DESC`
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: result.rows
+    });
+
+  } catch (err) {
+    console.error("Get tenants error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
   }
 };

@@ -1,18 +1,32 @@
-// backend/src/routes/tenantRoutes.js
-
 const express = require("express");
 const router = express.Router();
 
 const tenantController = require("../controllers/tenantController");
-const authMiddleware = require("../middleware/authMiddleware");
+const authenticate = require("../middleware/authenticate");
 const requireRole = require("../middleware/requireRole");
 
-// POST /api/tenants (super_admin only)
-router.post(
+// GET all tenants (super_admin only)
+router.get(
   "/",
-  authMiddleware,
-  requireRole("super_admin"),
-  tenantController.createTenant
+  authenticate,
+  requireRole(["super_admin"]),
+  tenantController.getAllTenants
+);
+
+// GET tenant by ID (super_admin + tenant_admin)
+router.get(
+  "/:id",
+  authenticate,
+  requireRole(["super_admin", "tenant_admin"]),
+  tenantController.getTenantById
+);
+
+// UPDATE tenant
+router.put(
+  "/:id",
+  authenticate,
+  requireRole(["super_admin", "tenant_admin"]),
+  tenantController.updateTenant
 );
 
 module.exports = router;

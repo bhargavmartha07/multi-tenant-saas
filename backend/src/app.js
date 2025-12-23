@@ -18,6 +18,9 @@ app.use(cors({
 }));
 app.use(express.json());
 
+const authRoutes = require("./routes/authRoutes");
+const tenantRoutes = require("./routes/tenantRoutes");
+
 // =====================
 // App State
 // =====================
@@ -31,6 +34,7 @@ let dbReady = false;
 app.get("/", (req, res) => {
   res.json({ message: "Multi-Tenant SaaS Backend Running" });
 });
+app.use("/api/tenants", tenantRoutes);
 
 // Health check (MANDATORY)
 app.get("/api/health", async (req, res) => {
@@ -47,6 +51,7 @@ app.get("/api/health", async (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+app.use("/api/auth", authRoutes);
 
 // =====================
 // Startup Logic

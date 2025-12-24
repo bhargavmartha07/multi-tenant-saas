@@ -87,3 +87,6 @@ process.on("SIGTERM", async () => {
   await pool.end();
   process.exit(0);
 });
+
+const userRoutes = require("./routes/userRoutes");
+app.use("/api/users", userRoutes);

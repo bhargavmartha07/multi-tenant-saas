@@ -55,20 +55,40 @@ exports.createTask = async (req, res) => {
 // GET TASKS
 exports.getTasks = async (req, res) => {
   try {
+    const { projectId } = req.query;
+    const { tenantId } = req.user;
+
+    if (!projectId) {
+      return res.status(400).json({
+        success: false,
+        message: "projectId is required"
+      });
+    }
+
     const result = await pool.query(
-      `SELECT id, title, description, status, created_at
-       FROM tasks
-       WHERE tenant_id = $1
-       ORDER BY created_at DESC`,
-      [req.user.tenantId]
+      `
+      SELECT id, title, description, status
+      FROM tasks
+      WHERE project_id = $1 AND tenant_id = $2
+      ORDER BY created_at DESC
+      `,
+      [projectId, tenantId]
     );
 
-    res.json({ success: true, data: result.rows });
-
+    res.json({
+      success: true,
+      data: result.rows
+    });
   } catch (err) {
-    res.status(500).json({ success: false, message: "Internal server error" });
+    console.error("GET TASKS ERROR:", err);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch tasks"
+    });
   }
 };
+
+
 
 // UPDATE TASK
 exports.updateTask = async (req, res) => {

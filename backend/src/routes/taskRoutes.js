@@ -5,7 +5,9 @@ const authenticate = require("../middleware/authenticate");
 const requireRole = require("../middleware/requireRole");
 const taskController = require("../controllers/taskController");
 
-// CREATE
+// ===============================
+// CREATE TASK
+// ===============================
 router.post(
   "/",
   authenticate,
@@ -13,7 +15,19 @@ router.post(
   taskController.createTask
 );
 
-// UPDATE
+// ===============================
+// ✅ GET TASKS (THIS WAS MISSING)
+// ===============================
+router.get(
+  "/",
+  authenticate,
+  requireRole(["tenant_admin", "super_admin", "user"]),
+  taskController.getTasks
+);
+
+// ===============================
+// UPDATE TASK
+// ===============================
 router.put(
   "/:id",
   authenticate,
@@ -21,11 +35,13 @@ router.put(
   taskController.updateTask
 );
 
-// DELETE
+// ===============================
+// DELETE TASK
+// ===============================
 router.delete(
   "/:id",
   authenticate,
-  requireRole(["tenant_admin", "super_admin"]),
+  requireRole(["super_admin"]),
   taskController.deleteTask
 );
 

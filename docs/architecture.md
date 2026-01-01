@@ -2,6 +2,8 @@
 
 ## System Architecture Diagram
 
+![System Architecture](./images/system-architecture.png)
+
 The system follows a standard 3-tier architecture:
 
 1.  **Client (Frontend)**: React application (Vite) running in the user's browser. It communicates with the backend via REST APIs over HTTPS.
@@ -12,6 +14,8 @@ The system follows a standard 3-tier architecture:
 User -> Browser (Frontend) -> (HTTP/JSON) -> Backend API -> (SQL) -> PostgreSQL
 
 ## Database Schema Design (ERD)
+
+![Database ERD](./images/database-erd.png)
 
 ### 1. Tenants Table (`tenants`)
 - **PK**: `id` (UUID)

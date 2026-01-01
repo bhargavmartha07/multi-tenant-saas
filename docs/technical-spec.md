@@ -1,5 +1,7 @@
 # Technical Specification
 
+This document provides a detailed overview of the technical architecture, project structure, and development guidelines for the Multi-Tenant SaaS platform. It serves as a reference for developers and system administrators.
+
 ## Project Structure
 
 ### Backend (`/backend`)

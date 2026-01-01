@@ -69,5 +69,13 @@ Watch the full walkthrough and demonstration of the application:
 - **Backend**: Node.js, Express, PostgreSQL (node-pg), JWT, Bcrypt.
 - **DevOps**: Docker, Docker Compose.
 
+## 🤝 Contributing
+
+1. Fork the repo.
+2. Create your feature branch (`git checkout -b feature/amazing-feature`).
+3. Commit your changes (`git commit -m 'Add some amazing-feature'`).
+4. Push to the branch (`git push origin feature/amazing-feature`).
+5. Open a Pull Request.
+
 ---
 © 2026 Multi-Tenant SaaS Project. All Rights Reserved.

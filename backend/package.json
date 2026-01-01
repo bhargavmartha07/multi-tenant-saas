@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "Multi-tenant SaaS backend",
+  "description": "Multi-tenant SaaS backend for project management",
   "main": "index.js",
   "scripts": {
     "start": "node src/server.js",

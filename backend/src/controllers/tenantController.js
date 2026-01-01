@@ -78,10 +78,12 @@ exports.createTenant = async (req, res) => {
 exports.getAllTenants = async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT id, name, subdomain, status, subscription_plan,
-              max_users, max_projects, created_at
-       FROM tenants
-       ORDER BY created_at DESC`
+      `SELECT t.id, t.name, t.subdomain, t.status, t.subscription_plan,
+              t.max_users, t.max_projects, t.created_at,
+              (SELECT COUNT(*)::int FROM users u WHERE u.tenant_id = t.id) AS total_users,
+              (SELECT COUNT(*)::int FROM projects p WHERE p.tenant_id = t.id) AS total_projects
+       FROM tenants t
+       ORDER BY t.created_at DESC`
     );
 
     return res.status(200).json({
@@ -134,7 +136,9 @@ exports.getTenantById = async (req, res) => {
       SELECT
         (SELECT COUNT(*) FROM users WHERE tenant_id = $1) AS total_users,
         (SELECT COUNT(*) FROM projects WHERE tenant_id = $1) AS total_projects,
-        (SELECT COUNT(*) FROM tasks WHERE tenant_id = $1) AS total_tasks
+        (SELECT COUNT(*) FROM tasks WHERE tenant_id = $1) AS total_tasks,
+        (SELECT COUNT(*) FROM tasks WHERE tenant_id = $1 AND status = 'completed') AS completed_tasks,
+        (SELECT COUNT(*) FROM tasks WHERE tenant_id = $1 AND status != 'completed') AS active_tasks
       `,
       [id]
     );
@@ -146,7 +150,9 @@ exports.getTenantById = async (req, res) => {
         stats: {
           totalUsers: Number(stats.rows[0].total_users),
           totalProjects: Number(stats.rows[0].total_projects),
-          totalTasks: Number(stats.rows[0].total_tasks)
+          totalTasks: Number(stats.rows[0].total_tasks),
+          completedTasks: Number(stats.rows[0].completed_tasks),
+          activeTasks: Number(stats.rows[0].active_tasks)
         }
       }
     });

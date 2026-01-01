@@ -1,10 +1,20 @@
 const express = require("express");
 const router = express.Router();
-const authController = require("../controllers/authController");
-const authMiddleware = require("../middleware/authMiddleware");
-const authMeController = require("../controllers/authMeController");
 
+const authController = require("../controllers/authController");
+const authenticate = require("../middleware/authenticate");
+
+// =======================
+// AUTH ROUTES
+// =======================
+
+// Login (email + password only)
 router.post("/login", authController.login);
-router.get("/me", authMiddleware, authMeController.getMe);
+
+// Tenant registration (public)
+router.post("/register-tenant", authController.registerTenant);
+
+// Get current logged-in user
+router.get("/me", authenticate, authController.me);
 
 module.exports = router;

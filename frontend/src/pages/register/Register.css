@@ -1,0 +1,40 @@
+.register-card {
+  max-width: 520px;
+}
+
+.input-hint {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  margin-top: var(--spacing-xs);
+  margin-bottom: 0;
+}
+
+.text-warning {
+  color: var(--warning-light);
+}
+
+.text-error {
+  color: var(--error-light);
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.checkbox-input {
+  width: auto;
+  margin-top: 0.25rem;
+  cursor: pointer;
+  accent-color: var(--primary);
+}
+
+.checkbox-label:hover {
+  color: var(--text-primary);
+}
+

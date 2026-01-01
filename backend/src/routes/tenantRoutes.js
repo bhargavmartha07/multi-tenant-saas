@@ -5,6 +5,14 @@ const tenantController = require("../controllers/tenantController");
 const authenticate = require("../middleware/authenticate");
 const requireRole = require("../middleware/requireRole");
 
+// CREATE TENANT (super_admin)
+router.post(
+  "/",
+  authenticate,
+  requireRole(["super_admin"]),
+  tenantController.createTenant
+);
+
 // GET all tenants (super_admin only)
 router.get(
   "/",
@@ -27,6 +35,19 @@ router.put(
   authenticate,
   requireRole(["super_admin", "tenant_admin"]),
   tenantController.updateTenant
+);
+
+// LIST users for tenant (super_admin + tenant_admin)
+router.get(
+  "/:id/users",
+  authenticate,
+  requireRole(["super_admin", "tenant_admin"]),
+  (req, res, next) => {
+    // attach tenantId param to request for reuse in controller
+    req.tenantId = req.params.id;
+    next();
+  },
+  require("../controllers/userController").listUsersForTenant
 );
 
 module.exports = router;
